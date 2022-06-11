@@ -38,8 +38,8 @@ sinoNum = (function () {
 	 */
 	function placePower(place, mem) {
 		if (unitMem[place]) return unitMem[place];
-		var r = "", p = place.toString(2), c, w = -1, i = p.length;
-		while (w++, c = p[--i]) if (c.indexOf('1') !== -1) r += attUnit[w];
+		var r = "", p = place.toString(2).split(''), c, w = -1, i = p.length;
+		while (w++, c = p[--i]) if (c === '1') r += attUnit[w];
 		return mem ? unitMem[place] = r : r;
 	}
 	/**
@@ -51,16 +51,16 @@ sinoNum = (function () {
 	 * @returns {string} 大部分的中文
 	 */
 	function getPlace(num, place, haveLiang, mem) {
-		if (num.indexOf('0000') === 0) return headNum[0];
-		var i = -1, w = 4, r = "", f, t;
+		if (num === '0000') return headNum[0];
+		var i = -1, w = 4, r = "", f, t, num = num.split('');
 		while (i++, w--) {
-			if (num[i].indexOf('0') === -1) {
+			if (num[i] !== '0') {
 				if (f) r += headNum[0];
 				t = headNum[num[i]];
-				if (num[i].indexOf('2') === 0) {
+				if (num[i] === '2') {
 					if (!haveLiang) t = '二';
 					else if (w === 1) t = '二';
-					else if (w === 0 && num[i - 1].indexOf('0') === -1) t = '二';
+					else if (w === 0 && num[i - 1] !== '0') t = '二';
 				}
 				r += t + preUnit[w], f = false;
 			} else f = true;
@@ -74,20 +74,22 @@ sinoNum = (function () {
 		num = parseInt(num);
 		if (!num) return headNum[0];
 		if (num < 0) f = true, num = -num;
-		num = String(num);
-		if (t = num.length % 4) for (i = 3 - t; i >= 0; i--) num = "0" + num;
+		num = String(num).split('');
+		if (t = num.length % 4) for (i = 3 - t; i >= 0; i--) num.unshift('0');
 		for (i = num.length; i > 0; i -= 4) {
 			c = "";
 			for (var j = i - 4; j < i; j++) c += num[j];
 			t = getPlace(c, w++, haveLiang, mem);
 			if (
-				r[0] && r[0].indexOf(headNum[0]) === 0 && t[0].indexOf(headNum[0]) === 0
+				r.slice(0, 1) && r.slice(0, 1) === headNum[0] && t.slice(0, 1) === headNum[0]
 			) t = t.slice(1);
 			r = t + r;
 		}
-		if (r[0].indexOf("零") === 0 || r.indexOf("一十") === 0) r = r.slice(1);
-		if (r[r.length - 1].indexOf("两") === 0) r = r.slice(0, -1) + "二";
-		if (f) r = "负" + r;
-		return r;
+		r = r.split('');
+		if (r[0] === "零") r = r.slice(1);
+		if (r[0] + r[1] === "一十") r = r.slice(1);
+		if (r[r.length - 1] === "两") r[r.length - 1] = "二";
+		if (f) r.unshift("负");
+		return r.join('');
 	}
 }());
