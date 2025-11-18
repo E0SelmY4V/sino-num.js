@@ -1,5 +1,7 @@
 # sino-num.js
 
+> 本仓库已改名 [sinonum](https://github.com/E0SelmY4V/sinonum) ，请移步新仓库查看。
+
 > 这是一个无聊的人在研究了一下午汉语计数方法后取得的成果。
 
 ---
